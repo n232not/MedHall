@@ -1,0 +1,47 @@
+<!-- lesson_detail.html -->
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row">
+   <div class="col-md-3" style="border-right: 1px solid #eee;">
+       <h3>{{ lesson.course.title }}</h3>
+       <ul class="nav flex-column">
+           {% for course_lesson in lesson.course.lessons.all %}
+           <li class="nav-item mb-2">
+               <a href="{% url 'lesson_detail' lesson.course.id course_lesson.id %}"
+                  class="nav-link {% if lesson.id == course_lesson.id %}active{% endif %}"
+                  {% if lesson.id == course_lesson.id %}style="background-color: #e9ecef;"{% endif %}>
+                   {{ course_lesson.title }}
+               </a>
+           </li>
+           {% endfor %}
+       </ul>
+   </div>
+   
+   <div class="col-md-9" id="lesson-content">
+       <h1>{{ lesson.title }}</h1>
+       {{ lesson.content|safe }}
+       {% if lesson.video_url %}
+       <div class="mt-4">
+           <iframe width="100%" height="400" src="{{ lesson.video_url }}" frameborder="0" allowfullscreen></iframe>
+       </div>
+       {% endif %}
+   </div>
+</div>
+
+<script>
+$(document).ready(function() {
+   $('.lesson-link').click(function(e) {
+       e.preventDefault();
+       var courseId = '{{ lesson.course.id }}';
+       var lessonId = $(this).data('lesson-id');
+       
+       $.get(`/courses/${courseId}/lesson/${lessonId}/content/`, function(data) {
+           $('#lesson-content').html(data);
+           $('.lesson-link').removeClass('active').css('background-color', '');
+           $(e.target).addClass('active').css('background-color', '#e9ecef');
+       });
+   });
+});
+</script>
+{% endblock %}

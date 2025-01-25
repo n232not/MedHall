@@ -1,0 +1,340 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="preload" href="{% static 'images/Screenshot 2025-01-24 203838.png' %}" as="image">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MedHall</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100;1,300;1,400;1,700;1,900&display=swap" rel="stylesheet">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style>
+        :root {
+            --primary-green: #02a95c;
+            --primary-gray: #608a89;
+            --light-blue: #e8f2f4;
+            --white: #fefefe;
+            --dark-gray: #000000;
+            --bar-gray: #cccccc;
+        }
+        .explore-dropdown {
+            display: none;
+            position: absolute;
+            top: 100%;
+            left: 0;
+            width: 80vw;
+            max-width: 1200px;
+            background: white;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            z-index: 1000;
+            padding: 20px;
+        }
+
+        .course-grid {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            gap: 15px;
+        }
+
+        .course-item {
+            padding: 10px;
+            text-decoration: none;
+            color: var(--dark-gray);
+        }
+
+        .course-item:hover {
+            background: var(--light-blue);
+        }
+        body {
+            background-color: var(--white);
+            font-family: 'Montserrat', sans-serif;
+        }
+        .navbar-logo {
+            height: 50px;
+            width: auto;
+        }   
+        .navbar {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0.5rem 2rem;
+            background-color: var(--white);
+            border-top: 1px solid var(--bar-gray);
+            border-bottom: 1px solid var(--bar-gray);
+            position: relative;
+        }
+        .navbar-content {
+            display: grid;
+            grid-template-columns: 1fr auto 1fr;
+            align-items: center;
+            width: 80%;
+            max-width: 1200px;
+            gap: 2rem;
+        }
+
+        .nav-left {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+            font-family: 'Lato', sans-serif;
+            font-weight: bold;
+            justify-content: flex-start;
+        }
+
+        .nav-center {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .explore-btn {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--primary-green);
+            font-weight: 500;
+            border: none;
+            background: none;
+            cursor: pointer;
+            padding: 0.4rem 0.5rem;
+            font-size: 1.05rem;
+            white-space: nowrap;
+        }
+
+        .search-container {
+            display: flex;
+            align-items: center;
+            padding: 5px 5px;
+            border: 1px solid var(--dark-gray);
+            border-radius: 5px;
+            width: 200px;
+            background-color: var(--white);
+            font-family: 'Lato', sans-serif;
+            position: relative;
+        }
+
+        .search-icon {
+            width: 25px;
+            height: 25px;
+            fill: var(--dark-gray);
+            margin-right: 8px;
+            flex-shrink: 0;
+        }
+
+        .search-container input {
+            border: none;
+            outline: none;
+            width: 100%;
+            font-family: 'Montserrat', sans-serif;
+            font-size: 1.05rem;
+            color: var(--dark-gray);
+        }
+
+        .search-dropdown {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            width: 100%;
+            background: white;
+            border: 1px solid var(--bar-gray);
+            z-index: 1000;
+            display: none;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        .search-dropdown a {
+            display: block;
+            padding: 10px;
+            text-decoration: none;
+            color: var(--dark-gray);
+        }
+
+        .search-dropdown a:hover {
+            background: var(--light-blue);
+        }
+
+        .logo {
+            font-size: 1.7rem;
+            font-weight: 600;
+            color: var(--primary-green);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+        }
+
+        .nav-right {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            font-family: 'Lato', sans-serif;
+            font-weight: bold;
+            justify-content: flex-end;
+        }
+        
+        .search-container input::placeholder {
+            font-family: 'Lato', sans-serif;
+            font-weight: bold;
+            color: var(--dark-gray);
+        }
+        
+        .nav-left, .nav-left a, .explore-btn {
+            font-weight: bold;
+        }   
+
+        .nav-right, .nav-right a, .sign-up-btn {
+            font-weight: bold;
+        }
+
+        .nav-link {
+            text-decoration: none;
+            color: var(--dark-gray);
+            font-weight: 500;
+            font-size: 1.05rem;
+            white-space: nowrap;
+        }
+
+        .sign-up-btn {
+            background-color: var(--primary-green);
+            color: var(--white);
+            border: none;
+            padding: 0.6rem 1rem;
+            border-radius: 4px;
+            font-weight: 500;
+            font-size: 1.05rem;
+            white-space: nowrap;
+        }
+
+        @media (max-width: 992px) {
+            .navbar {
+                padding: 0.3rem 1rem;
+            }
+
+            .navbar-content {
+                grid-template-columns: 1fr;
+                grid-template-rows: auto auto auto;
+                width: 100%;
+                gap: 1rem;
+            }
+
+            .nav-left, .nav-right, .nav-center {
+                justify-content: center;
+            }
+
+            .nav-left {
+                flex-wrap: wrap;
+                gap: 0.5rem;
+            }
+
+            .search-container {
+                width: 100%;
+                max-width: 300px;
+            }
+
+            .nav-right {
+                flex-wrap: wrap;
+                gap: 0.5rem;
+            }
+        }
+        
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="navbar-content">
+            <div class="nav-left">
+                <button class="explore-btn">Explore ▾</button>
+                <div class="explore-dropdown">
+                    <div class="course-grid">
+                        {% for course in courses %}
+                            <a href="{% url 'course_detail' course.id %}" class="course-item">
+                                {{ course.title }}
+                            </a>
+                        {% endfor %}
+                    </div>
+                </div>
+                <div class="search-container">
+                    <svg class="search-icon" viewBox="0 0 24 24" fill="#608a89">
+                        <path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16a6.471 6.471 0 0 0 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
+                    </svg>
+                    <input type="text" id="search-box" placeholder="Search">
+                    <div id="search-results" class="search-dropdown"></div>
+                </div>
+            </div>
+            <div class="nav-center">
+                <a href="{% url 'homepage' %}" class="logo">
+                    <img src="{% static 'images/Screenshot 2025-01-24 203838.png' %}" alt="MedHall Logo" class="navbar-logo">
+                </a>
+            </div>
+            <div class="nav-right">
+                <a href="/courses" class="nav-link">Courses</a>
+                {% if user.is_authenticated %}
+                    <a href="/logout" class="nav-link">Log out</a>
+                {% else %}
+                    <a href="/login" class="nav-link">Log in</a>
+                    <a href="/signup" class="sign-up-btn">Sign up</a>
+                {% endif %}
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-4">
+        {% block content %}{% endblock %}
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            $("#search-box").on("input", function () {
+                let query = $(this).val();
+                if (query.length > 1) {
+                    $.ajax({
+                        url: "/search/",
+                        method: "GET",
+                        data: { q: query },
+                        dataType: "json",
+                        success: function (data) {
+                            let dropdown = $("#search-results");
+                            dropdown.empty();
+                            if (data.length) {
+                                data.forEach(course => {
+                                    dropdown.append(`<a href="/courses/${course.id}/">${course.title}</a>`);
+                                });
+                                dropdown.show();
+                            } else {
+                                dropdown.hide();
+                            }
+                        },
+                        error: function() {
+                            console.log("Search request failed");
+                        }
+                    });
+                } else {
+                    $("#search-results").hide();
+                }
+            });
+
+            $(document).on("click", function (e) {
+                if (!$(e.target).closest(".search-container").length) {
+                    $("#search-results").hide();
+                }
+            });
+        });
+        $(document).ready(function() {
+            $('.explore-btn').click(function(e) {
+                e.preventDefault();
+                $('.explore-dropdown').toggle();
+            });
+
+            $(document).click(function(e) {
+                if (!$(e.target).closest('.explore-btn, .explore-dropdown').length) {
+                    $('.explore-dropdown').hide();
+                }
+            });
+        });
+    </script>
+</body>
+</html>
