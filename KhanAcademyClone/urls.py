@@ -24,4 +24,5 @@ urlpatterns = [
     path('courses/', include('courses.urls')),
     path('', views.homepage, name='homepage'),
     path('search/', views.search_courses, name='search_courses'),
+    path('search/results/', views.search_results, name='search_results'),
 ]

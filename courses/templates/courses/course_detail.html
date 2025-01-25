@@ -1,13 +1,65 @@
+<!-- course_detail.html -->
 {% extends "base.html" %}
 
 {% block content %}
-<h1>{{ course.title }}</h1>
-<p>{{ course.description }}</p>
+<div class="container my-5">
+   <div class="row">
+       <div class="col-lg-8">
+           <h1>{{ course.title }}</h1>
+           <div class="card mb-4">
+               <div class="card-body">
+                   <p class="card-text">{{ course.description }}</p>
+                   <div class="d-flex justify-content-between align-items-center">
+                       <span class="text-muted">By {{ course.teacher.get_full_name }}</span>
+                   </div>
+               </div>
+           </div>
 
-<h2>Lessons:</h2>
-<ul>
-    {% for lesson in course.lessons.all %}
-    <li><a href="{% url 'lesson_detail' lesson.course.id lesson.id %}">{{ lesson.title }}</a></li>
-    {% endfor %}
-</ul>
+           <div class="accordion" id="unitsAccordion">
+               {% for unit in course.units.all %}
+               <div class="accordion-item">
+                   <h2 class="accordion-header">
+                       <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#unit{{ unit.id }}">
+                           {{ unit.title }}
+                       </button>
+                   </h2>
+                   <div id="unit{{ unit.id }}" class="accordion-collapse collapse show" data-bs-parent="#unitsAccordion">
+                       <div class="accordion-body">
+                           <div class="list-group">
+                               {% for lesson in unit.lessons.all %}
+                               <a href="{% url 'lesson_detail' course.id unit.id lesson.id %}" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                                   {{ lesson.title }}
+                                   <span class="badge bg-success rounded-pill">→</span>
+                               </a>
+                               {% endfor %}
+                           </div>
+                       </div>
+                   </div>
+               </div>
+               {% endfor %}
+           </div>
+       </div>
+
+       <div class="col-lg-4">
+           <div class="card sticky-top" style="top: 20px;">
+               <div class="card-body">
+                   <h5 class="card-title">Course Overview</h5>
+                   <ul class="list-unstyled">
+                       <li class="mb-2">
+                           <i class="bi bi-book"></i> {{ course.units.count }} units
+                       </li>
+                       <li class="mb-2">
+                           <i class="bi bi-person"></i> Created by {{ course.teacher.get_full_name }}
+                       </li>
+                   </ul>
+                   {% with first_unit=course.units.first %}
+                       {% if first_unit and first_unit.lessons.first %}
+                           <a href="{% url 'lesson_detail' course.id first_unit.id first_unit.lessons.first.id %}" class="btn btn-success w-100">Start Learning</a>
+                       {% endif %}
+                   {% endwith %}
+               </div>
+           </div>
+       </div>
+   </div>
+</div>
 {% endblock %}

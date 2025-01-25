@@ -15,12 +15,24 @@ class Course(models.Model):
     def __str__(self):
         return self.title
 
+class Unit(models.Model):
+    course = models.ForeignKey(Course, on_delete=models.CASCADE, related_name="units")
+    title = models.CharField(max_length=200)
+    order = models.PositiveIntegerField(default=0)
+
+    class Meta:
+        ordering = ['order']
+
+    def __str__(self):
+        return f"{self.course.title} - {self.title}"
+
 class Lesson(models.Model):
     course = models.ForeignKey(Course, on_delete=models.CASCADE, related_name="lessons")
     title = models.CharField(max_length=200)
     content = RichTextField()  # Supports rich text editing
     video_url = models.URLField(blank=True, null=True)
     order = models.PositiveIntegerField(default=0)  # To order lessons within a course
+    unit = models.ForeignKey(Unit, on_delete=models.CASCADE, related_name="lessons")
 
     class Meta:
         ordering = ['order']
@@ -52,3 +64,4 @@ class Progress(models.Model):
 
     def __str__(self):
         return f"{self.student.username} - {self.lesson.title}"
+

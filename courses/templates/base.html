@@ -6,6 +6,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MedHall</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Roboto+Mono:wght@300;400;500&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -51,17 +52,17 @@
         }
         body {
             background-color: var(--white);
-            font-family: 'Montserrat', sans-serif;
+            font-family: 'Inter', sans-serif;
         }
         .navbar-logo {
-            height: 50px;
+            height: 45px;
             width: auto;
         }   
         .navbar {
             display: flex;
             align-items: center;
             justify-content: center;
-            padding: 0.5rem 2rem;
+            padding: 0.3rem 2rem;
             background-color: var(--white);
             border-top: 1px solid var(--bar-gray);
             border-bottom: 1px solid var(--bar-gray);
@@ -80,7 +81,7 @@
             display: flex;
             align-items: center;
             gap: 1.5rem;
-            font-family: 'Lato', sans-serif;
+            font-family: 'Inter', sans-serif;
             font-weight: bold;
             justify-content: flex-start;
         }
@@ -113,7 +114,7 @@
             border-radius: 5px;
             width: 200px;
             background-color: var(--white);
-            font-family: 'Lato', sans-serif;
+            font-family: 'Inter', sans-serif;
             position: relative;
         }
 
@@ -129,7 +130,7 @@
             border: none;
             outline: none;
             width: 100%;
-            font-family: 'Montserrat', sans-serif;
+            font-family: 'Inter', sans-serif;
             font-size: 1.05rem;
             color: var(--dark-gray);
         }
@@ -171,20 +172,50 @@
             display: flex;
             align-items: center;
             gap: 1rem;
-            font-family: 'Lato', sans-serif;
+            font-family: 'Inter', sans-serif;
             font-weight: bold;
             justify-content: flex-end;
         }
         
         .search-container input::placeholder {
-            font-family: 'Lato', sans-serif;
+            font-family: 'Inter', sans-serif;
             font-weight: bold;
             color: var(--dark-gray);
         }
         
         .nav-left, .nav-left a, .explore-btn {
             font-weight: bold;
-        }   
+        }
+        /* Add to base.html style section */
+        .hero {
+            background-color: var(--light-blue) !important;
+            padding: 4rem 0;
+        }
+
+        .card {
+            transition: transform 0.2s;
+            border: 1px solid var(--bar-gray);
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .btn-success {
+            background-color: var(--primary-green);
+            border-color: var(--primary-green);
+        }
+
+        .btn-outline-success {
+            color: var(--primary-green);
+            border-color: var(--primary-green);
+        }
+
+        .btn-outline-success:hover {
+            background-color: var(--primary-green);
+            color: var(--white);
+        }
 
         .nav-right, .nav-right a, .sign-up-btn {
             font-weight: bold;
@@ -262,7 +293,14 @@
                         <path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16a6.471 6.471 0 0 0 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
                     </svg>
                     <input type="text" id="search-box" placeholder="Search">
-                    <div id="search-results" class="search-dropdown"></div>
+                    <div id="search-results" class="search-dropdown">
+                        {% for result in results %}
+                            <a href="{{ result.url }}" class="d-block p-2 text-decoration-none">
+                                <span class="fw-bold">{{ result.type }}:</span> {{ result.title }}
+                            </a>
+                        {% endfor %}
+                        <a href="/search/?q=" id="view-all" class="d-block p-2 text-decoration-none bg-light text-center">View all results</a>
+                    </div>
                 </div>
             </div>
             <div class="nav-center">
@@ -293,33 +331,39 @@
                 if (query.length > 1) {
                     $.ajax({
                         url: "/search/",
-                        method: "GET",
                         data: { q: query },
                         dataType: "json",
                         success: function (data) {
+                            console.log(data);
                             let dropdown = $("#search-results");
                             dropdown.empty();
-                            if (data.length) {
-                                data.forEach(course => {
-                                    dropdown.append(`<a href="/courses/${course.id}/">${course.title}</a>`);
+                            if (data.results && data.results.length) {
+                                data.results.forEach(result => {
+                                    dropdown.append(`
+                                        <a href="${result.url}" class="d-block p-2 text-decoration-none">
+                                            <span class="fw-bold">${result.type}:</span> ${result.title}
+                                        </a>
+                                    `);
                                 });
+                                dropdown.append(`
+                                    <a href="/search/results/?q=${query}" class="d-block p-2 text-decoration-none bg-light text-center">
+                                        View all results
+                                    </a>
+                                `);
                                 dropdown.show();
                             } else {
                                 dropdown.hide();
                             }
-                        },
-                        error: function() {
-                            console.log("Search request failed");
                         }
                     });
                 } else {
                     $("#search-results").hide();
                 }
             });
-
-            $(document).on("click", function (e) {
-                if (!$(e.target).closest(".search-container").length) {
-                    $("#search-results").hide();
+            $("#search-box").on("keypress", function(e) {
+                if (e.which == 13) {  // Enter key
+                    let query = $(this).val();
+                    window.location.href = `/search/results/?q=${encodeURIComponent(query)}`;
                 }
             });
         });
@@ -334,6 +378,11 @@
                     $('.explore-dropdown').hide();
                 }
             });
+        });
+        $(document).click(function(e) {
+            if (!$(e.target).closest('.search-container, #search-results').length) {
+                $("#search-results").hide();
+            }
         });
     </script>
 </body>

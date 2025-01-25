@@ -1,6 +1,28 @@
 {% extends "base.html" %}
 
 {% block content %}
-<h1>Welcome to MedHall</h1>
-<p>Your learning hub for all things medicine.</p>
+<div class="hero bg-light py-5 text-center">
+    <div class="container">
+        <h1 class="display-4 mb-4">Welcome to MedHall</h1>
+        <p class="lead mb-4">Your learning hub for all things medicine.</p>
+        <a href="{% url 'course_list' %}" class="btn btn-success btn-lg">Start Learning</a>
+    </div>
+</div>
+
+<div class="container my-5">
+    <h2 class="mb-4">Featured Courses</h2>
+    <div class="row row-cols-1 row-cols-md-3 g-4">
+        {% for course in courses|slice:":3" %}
+        <div class="col">
+            <div class="card h-100">
+                <div class="card-body">
+                    <h5 class="card-title">{{ course.title }}</h5>
+                    <p class="card-text">{{ course.description|truncatewords:20 }}</p>
+                    <a href="{% url 'course_detail' course.id %}" class="btn btn-outline-success">Learn More</a>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
 {% endblock %}

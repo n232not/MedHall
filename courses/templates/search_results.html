@@ -1,0 +1,104 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container my-5">
+    <div class="search-container-large d-flex align-items-center mb-4">
+        <div class="search-input-wrapper flex-grow-1 me-2">
+            <svg class="search-icon" viewBox="0 0 24 24" fill="#608a89">
+                <path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16a6.471 6.471 0 0 0 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
+            </svg>
+            <input type="text" id="search-results-box" class="form-control" placeholder="Search" value="{{ query }}">
+        </div>
+        <button id="search-results-button" class="btn btn-success">Search</button>
+    </div>
+
+    <h2>Search Results for "{{ query }}"</h2>
+    
+    {% if courses %}
+    <h3>Courses</h3>
+    <div class="list-group mb-4">
+        {% for course in courses %}
+        <a href="{% url 'course_detail' course.id %}" class="list-group-item list-group-item-action">
+            {{ course.title }}
+        </a>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    {% if units %}
+    <h3>Units</h3>
+    <div class="list-group mb-4">
+        {% for unit in units %}
+        <a href="{% url 'unit_detail' unit.course.id unit.id %}" class="list-group-item list-group-item-action">
+            {{ unit.title }} ({{ unit.course.title }})
+        </a>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    {% if lessons %}
+    <h3>Lessons</h3>
+    <div class="list-group">
+        {% for lesson in lessons %}
+        <a href="{% url 'lesson_detail' lesson.unit.course.id lesson.unit.id lesson.id %}" class="list-group-item list-group-item-action">
+            {{ lesson.title }} ({{ lesson.unit.course.title }} - {{ lesson.unit.title }})
+        </a>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    {% if not courses and not units and not lessons %}
+    <p>No results found.</p>
+    {% endif %}
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    var searchBox = document.getElementById('search-results-box');
+    var searchButton = document.getElementById('search-results-button');
+
+    function performSearch() {
+        var query = searchBox.value;
+        window.location.href = '/search/results/?q=' + encodeURIComponent(query);
+    }
+
+    searchBox.addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+            performSearch();
+        }
+    });
+
+    searchButton.addEventListener('click', performSearch);
+});
+</script>
+
+{% block extra_styles %}
+<style>
+.search-container-large {
+    background-color: white;
+    border: 1px solid #ced4da;
+    border-radius: 0.25rem;
+    padding: 0.5rem;
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.search-container-large .search-icon {
+    width: 24px;
+    height: 24px;
+    margin-right: 10px;
+}
+
+.search-container-large input {
+    border: none;
+    outline: none;
+    flex-grow: 1;
+}
+
+.search-container-large .search-input-wrapper {
+    display: flex;
+    align-items: center;
+}
+</style>
+{% endblock %}
+{% endblock %}

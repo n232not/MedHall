@@ -3,20 +3,27 @@
 
 {% block content %}
 <div class="row">
-   <div class="col-md-3" style="border-right: 1px solid #eee;">
-       <h3>{{ lesson.course.title }}</h3>
-       <ul class="nav flex-column">
-           {% for course_lesson in lesson.course.lessons.all %}
-           <li class="nav-item mb-2">
-               <a href="{% url 'lesson_detail' lesson.course.id course_lesson.id %}"
-                  class="nav-link {% if lesson.id == course_lesson.id %}active{% endif %}"
-                  {% if lesson.id == course_lesson.id %}style="background-color: #e9ecef;"{% endif %}>
-                   {{ course_lesson.title }}
-               </a>
-           </li>
-           {% endfor %}
-       </ul>
-   </div>
+    <div class="col-md-3" style="border-right: 1px solid #eee;">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item">
+                    <a href="{% url 'course_detail' lesson.unit.course.id %}">{{ lesson.unit.course.title }}</a>
+                </li>
+                <li class="breadcrumb-item">
+                    <a href="{% url 'unit_detail' lesson.unit.course.id lesson.unit.id %}">{{ lesson.unit.title }}</a>
+                </li>
+            </ol>
+        </nav>
+        
+        <div class="list-group">
+            {% for unit_lesson in lesson.unit.lessons.all %}
+                <a href="{% url 'lesson_detail' lesson.unit.course.id lesson.unit.id unit_lesson.id %}" 
+                   class="list-group-item {% if unit_lesson.id == lesson.id %}active{% endif %}">
+                    {{ unit_lesson.title }}
+                </a>
+            {% endfor %}
+        </div>
+    </div>
    
    <div class="col-md-9" id="lesson-content">
        <h1>{{ lesson.title }}</h1>
