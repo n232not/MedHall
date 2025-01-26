@@ -1,28 +1,201 @@
 {% extends "base.html" %}
-
+{% load static %}
 {% block content %}
-<div class="hero bg-light py-5 text-center">
-    <div class="container">
-        <h1 class="display-4 mb-4">Welcome to MedHall</h1>
-        <p class="lead mb-4">Your learning hub for all things medicine.</p>
-        <a href="{% url 'course_list' %}" class="btn btn-success btn-lg">Start Learning</a>
-    </div>
-</div>
-
-<div class="container my-5">
-    <h2 class="mb-4">Featured Courses</h2>
-    <div class="row row-cols-1 row-cols-md-3 g-4">
-        {% for course in courses|slice:":3" %}
-        <div class="col">
-            <div class="card h-100">
-                <div class="card-body">
-                    <h5 class="card-title">{{ course.title }}</h5>
-                    <p class="card-text">{{ course.description|truncatewords:20 }}</p>
-                    <a href="{% url 'course_detail' course.id %}" class="btn btn-outline-success">Learn More</a>
+<!-- Hero Section -->
+<div class="hero">
+    <div class="container-fluid p-0">
+        <div class="row align-items-center gx-5 mx-0">
+            <div class="col-lg-6 text-start hero-text">
+                <h1>Welcome to MedHall</h1>
+                <p>Your ultimate learning hub for all things medicine.</p>
+            </div>
+            <div class="col-lg-6 d-flex justify-content-center">
+                <div class="hero-image-container">
+                    <img src="{% static 'images/thumbnail_Untitled_Artwork.png' %}" alt="MedHall Hero" class="hero-image">
                 </div>
             </div>
         </div>
-        {% endfor %}
     </div>
 </div>
+
+<!-- Course Sections -->
+<div class="course-sections mt-0">
+    <div class="container">
+        <div class="row">
+            {% for course in courses %}
+            <div class="col-md-4 mb-4">
+                <div class="course-category">
+                    <h2 class="category-title">{{ course.title }}</h2>
+                    <div class="course-list">
+                        {% for unit in course.units.all %}
+                            <a href="{% url 'course_detail' course.pk %}#unit-{{ unit.pk }}" class="course-link">{{ unit.title }}</a>
+                        {% endfor %}
+                        <a href="{% url 'course_detail' course.pk %}" class="course-link see-all">See all {{ course.title }}</a>
+                    </div>
+                </div>
+            </div>
+            {% if forloop.counter|divisibleby:3 %}
+                </div><div class="row">
+            {% endif %}
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+<style>
+/* Hero styles */
+.hero {
+    padding: 0;
+    margin: 0;
+    background-color: #ffffff !important;
+    min-height: 85vh;
+    display: flex;
+    align-items: center;
+    border: none;
+}
+
+.hero-text {
+    padding-left: 7%;
+}
+
+.hero h1 {
+    color: var(--dark-gray);
+    font-family: 'Inter', sans-serif;
+    font-size: 4.5rem;
+    line-height: 1.1;
+    margin-bottom: 1.5rem;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+}
+
+.hero p {
+    color: var(--primary-gray);
+    font-family: 'Inter', sans-serif;
+    font-size: 1.4rem;
+    margin-bottom: 2rem;
+    font-weight: 400;
+    line-height: 1.5;
+    max-width: 90%;
+}
+
+.hero-image-container {
+    width: 100%;
+    max-width: 700px;  /* Increased from 500px */
+    padding: 20px;
+}
+
+.hero-image {
+    width: 100%;
+    height: auto;
+    object-fit: contain;
+    max-height: 600px;  /* Increased from 450px */
+    transition: transform 0.3s ease-in-out;
+}
+
+/* Remove any top margins/padding from base container */
+body > .container {
+    margin-top: 0 !important;
+    padding-top: 0 !important;
+}
+
+.navbar {
+    margin-bottom: 0 !important;
+    border-bottom: none !important;
+}
+
+/* Rest of the styles remain the same */
+.course-sections {
+    background-color: #f5f5f5;
+    padding: 4rem 0;
+}
+
+.course-category {
+    padding: 1.5rem;
+    background-color: #f5f5f5;
+    border-radius: 8px;
+    height: 100%;
+    box-shadow: none;
+}
+
+.category-title {
+    font-family: 'Inter', sans-serif;
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: #333;
+    margin-bottom: 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: none;
+}
+
+.course-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    padding-left: 0.5rem;
+}
+
+.course-link {
+    color: #4a4a4a;
+    text-decoration: none;
+    font-size: 0.95rem;
+    padding: 0.3rem 0.5rem;
+    border-radius: 4px;
+    transition: all 0.2s ease;
+}
+
+.course-link:hover {
+    background-color: var(--light-blue);
+    color: var(--primary-green);
+    padding-left: 1rem;
+}
+
+.course-link.see-all {
+    color: var(--primary-green);
+    font-weight: 500;
+    margin-top: 0.5rem;
+    border-top: none;
+    padding-top: 0.5rem;
+    font-size: 0.9rem;
+}
+/* Responsive adjustments */
+@media (max-width: 992px) {
+    .hero {
+        min-height: auto;
+        padding: 4rem 0;
+    }
+
+    .hero-text {
+        padding-left: 5%;
+        text-align: center;
+    }
+
+    .hero h1 {
+        font-size: 3rem;
+    }
+
+    .hero p {
+        font-size: 1.2rem;
+        margin: 0 auto 2rem;
+    }
+
+    .hero-image-container {
+        max-width: 500px;
+        margin: 0 auto;
+    }
+
+    .hero-image {
+        max-height: 450px;
+    }
+}
+
+@media (max-width: 768px) {
+    .course-sections {
+        padding: 2rem 0;
+    }
+    
+    .course-category {
+        margin-bottom: 1rem;
+    }
+}
+</style>
 {% endblock %}
