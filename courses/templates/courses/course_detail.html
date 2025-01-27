@@ -5,10 +5,6 @@
     margin-bottom: 0 !important;
     border-bottom: none !important;
 }
-.navbar-content {
-    width: 100% !important;
-    max-width: none !important;
-}
 .container {
     max-width: none !important;
     padding: 0 !important;
@@ -92,7 +88,7 @@
 
 </style>
 <div class="d-flex">
-    <div class="sidebar bg-white" style="width: 380px; overflow-y: auto; position: fixed; height: calc(100vh - 70px); top: 70px; border-right: 1px solid #e9ecef;">
+    <div class="sidebar bg-white" style="width: 380px; overflow-y: auto; position: fixed; height: calc(100vh - 64px); top: 64px; border-right: 1px solid #e9ecef;">
         <div class="course-header">
             <div class="course-title">{{ course.title }}</div>
             <div class="course-meta">{{ course.units.count }} UNITS</div>
@@ -145,6 +141,33 @@
             });
         });
    
+        function setActiveUnit(activeLink) {
+            unitLinks.forEach(link => link.classList.remove('active'));
+            if (activeLink) {
+                activeLink.classList.add('active');
+            }
+        }
+    });
+    document.addEventListener('DOMContentLoaded', function() {
+        const unitLinks = document.querySelectorAll('.unit-link');
+        
+        // Set initial active state based on URL hash
+        const hash = window.location.hash;
+        if (hash) {
+            setActiveUnit(document.querySelector(`[data-unit-id="${hash.slice(1)}"]`));
+            // Scroll to unit
+            document.querySelector(hash).scrollIntoView({ behavior: 'smooth' });
+        } else if (unitLinks.length > 0) {
+            setActiveUnit(unitLinks[0]);
+        }
+        
+        // Update active state and scroll on click
+        unitLinks.forEach(link => {
+            link.addEventListener('click', function(e) {
+                setActiveUnit(this);
+            });
+        });
+        
         function setActiveUnit(activeLink) {
             unitLinks.forEach(link => link.classList.remove('active'));
             if (activeLink) {

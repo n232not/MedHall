@@ -41,9 +41,15 @@ body {
 }
 
 .breadcrumb-item a {
-    color: #636e72;
+    color: #313131;
     text-decoration: none;
-    font-size: 14px;
+    font-size: 15px;
+    font-weight: 500;
+}
+
+.breadcrumb-item:hover {
+    text-decoration: underline;
+    text-underline-offset: 3px;
 }
 
 .lesson-list {
@@ -52,11 +58,11 @@ body {
 
 .lesson-link {
     display: block;
-    padding: 16px 20px;
+    padding: 20px 20px;
     color: #2d3436;
     text-decoration: none;
-    font-size: 14px;
-    font-weight: 500;
+    font-size: 16px;
+    font-weight: 600;
     border-left: 4px solid transparent;
 }
 
@@ -79,7 +85,7 @@ body {
 }
 
 .lesson-title {
-    font-size: 24px;
+    font-size: 48px;
     font-weight: 700;
     color: #2d3436;
     margin-bottom: 24px;
@@ -102,7 +108,7 @@ body {
                     <a href="{% url 'course_detail' lesson.unit.course.id %}">{{ lesson.unit.course.title }}</a>
                 </li>
                 <li class="breadcrumb-item">
-                    <a href="{% url 'unit_detail' lesson.unit.course.id lesson.unit.id %}">{{ lesson.unit.title }}</a>
+                    <a href="{% url 'course_detail' lesson.unit.course.id %}#unit{{ lesson.unit.id }}">{{ lesson.unit.title }}</a>
                 </li>
             </ol>
         </nav>

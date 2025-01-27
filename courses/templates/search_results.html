@@ -1,67 +1,186 @@
 {% extends "base.html" %}
-
 {% block content %}
-<div class="container my-5">
-    <div class="search-container-large d-flex align-items-center mb-4">
-        <div class="search-input-wrapper flex-grow-1 me-2">
-            <svg class="search-icon" viewBox="0 0 24 24" fill="#608a89">
+<style>
+.search-page {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 40px 20px;
+}
+
+.search-page .search-wrapper {
+    margin-bottom: 40px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 12px;
+    width: 75%;
+    margin: 0 auto;
+}
+
+.search-page .search-container {
+    display: flex;
+    align-items: center;
+    background: white;
+    border: 1px solid #dfe1e5;
+    border-radius: 4px;  /* Changed from 24px to 4px for rectangular shape */
+    padding: 8px 16px;
+    width: 100%;  /* Take full width of wrapper */
+    transition: all 0.2s ease;
+}
+
+.search-page .search-container:focus-within {
+    border-color: #0d6efd;
+}
+
+.search-page .search-icon {
+    width: 20px;
+    height: 20px;
+    fill: #9aa0a6;
+    margin-right: 12px;
+}
+
+.search-page .search-input {
+    border: none;
+    outline: none;
+    width: 100%;
+    font-size: 16px;
+    color: #202124;
+    background: transparent;
+}
+
+.search-page .search-button {
+    padding: 8px 24px;  /* Increased horizontal padding */
+    background: #0d6efd;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background 0.2s;
+    white-space: nowrap;  /* Prevent button text from wrapping */
+    height: 40px;  /* Match height with search container */
+}
+
+.search-page .search-button:hover {
+    background: #0b5ed7;
+}
+
+/* Rest of your existing styles remain the same */
+
+.results-section {
+    margin-top: 32px;
+}
+
+.results-title {
+    font-size: 20px;
+    color: #202124;
+    margin-bottom: 16px;
+    font-weight: 500;
+}
+
+.search-result {
+    padding: 6px 0px;
+    border-radius: 8px;
+    margin-bottom: 16px;
+    transition: all 0.2s;
+    text-decoration: none;
+    display: block;
+}
+
+.search-result:hover {
+    border-color: rgba(223,225,229,0);
+}
+
+.result-title {
+    color: #1a0dab;
+    font-size: 16px;
+    margin-bottom: 4px;
+    font-weight: 500;
+}
+.result-title:hover {
+    text-decoration: underline;
+    text-underline-offset: 3px;
+}
+
+.result-path {
+    color: #5f6368;
+    font-size: 13px;
+}
+
+.no-results {
+    text-align: center;
+    color: #5f6368;
+    font-size: 16px;
+    margin-top: 40px;
+}
+</style>
+
+<div class="search-page">
+    <div class="search-wrapper">
+        <div class="search-container">
+            <svg class="search-icon" viewBox="0 0 24 24">
                 <path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16a6.471 6.471 0 0 0 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
             </svg>
-            <input type="text" id="search-results-box" class="form-control" placeholder="Search" value="{{ query }}">
+            <input type="text" id="search-results-box" class="search-input" placeholder="Search MedHall" value="{{ query }}">
         </div>
-        <button id="search-results-button" class="btn btn-success">Search</button>
+        <button id="search-results-button" class="search-button">Search</button>
     </div>
 
-    <h2>Search Results for "{{ query }}"</h2>
-    
     {% if courses %}
-    <h3>Courses</h3>
-    <div class="list-group mb-4">
+    <div class="results-section">
+        <h3 class="results-title">Courses</h3>
         {% for course in courses %}
-        <a href="{% url 'course_detail' course.id %}" class="list-group-item list-group-item-action">
-            {{ course.title }}
+        <a href="{% url 'course_detail' course.id %}" class="search-result">
+            <div class="result-title">{{ course.title }}</div>
+            <div class="result-path">Course</div>
         </a>
         {% endfor %}
     </div>
     {% endif %}
 
     {% if units %}
-    <h3>Units</h3>
-    <div class="list-group mb-4">
+    <div class="results-section">
+        <h3 class="results-title">Units</h3>
         {% for unit in units %}
-        <a href="{% url 'unit_detail' unit.course.id unit.id %}" class="list-group-item list-group-item-action">
-            {{ unit.title }} ({{ unit.course.title }})
+        <a href="{% url 'course_detail' unit.course.id %}#unit{{ unit.id }}" class="search-result">
+            <div class="result-title">{{ unit.title }}</div>
+            <div class="result-path">{{ unit.course.title }} › Unit</div>
         </a>
         {% endfor %}
     </div>
     {% endif %}
 
     {% if lessons %}
-    <h3>Lessons</h3>
-    <div class="list-group">
+    <div class="results-section">
+        <h3 class="results-title">Lessons</h3>
         {% for lesson in lessons %}
-        <a href="{% url 'lesson_detail' lesson.unit.course.id lesson.unit.id lesson.id %}" class="list-group-item list-group-item-action">
-            {{ lesson.title }} ({{ lesson.unit.course.title }} - {{ lesson.unit.title }})
+        <a href="{% url 'lesson_detail' lesson.unit.course.id lesson.unit.id lesson.id %}" class="search-result">
+            <div class="result-title">{{ lesson.title }}</div>
+            <div class="result-path">{{ lesson.unit.course.title }} › {{ lesson.unit.title }} › Lesson</div>
         </a>
         {% endfor %}
     </div>
     {% endif %}
 
     {% if not courses and not units and not lessons %}
-    <p>No results found.</p>
+    <div class="no-results">
+        No results found for "{{ query }}"
+    </div>
     {% endif %}
 </div>
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    var searchBox = document.getElementById('search-results-box');
-    var searchButton = document.getElementById('search-results-button');
-
+    const searchBox = document.getElementById('search-results-box');
+    const searchButton = document.getElementById('search-results-button');
+    
     function performSearch() {
-        var query = searchBox.value;
-        window.location.href = '/search/results/?q=' + encodeURIComponent(query);
+        const query = searchBox.value.trim();
+        if (query) {
+            window.location.href = '/search/results/?q=' + encodeURIComponent(query);
+        }
     }
-
+    
     searchBox.addEventListener('keypress', function(e) {
         if (e.key === 'Enter') {
             performSearch();
@@ -71,34 +190,4 @@ document.addEventListener('DOMContentLoaded', function() {
     searchButton.addEventListener('click', performSearch);
 });
 </script>
-
-{% block extra_styles %}
-<style>
-.search-container-large {
-    background-color: white;
-    border: 1px solid #ced4da;
-    border-radius: 0.25rem;
-    padding: 0.5rem;
-    max-width: 800px;
-    margin: 0 auto;
-}
-
-.search-container-large .search-icon {
-    width: 24px;
-    height: 24px;
-    margin-right: 10px;
-}
-
-.search-container-large input {
-    border: none;
-    outline: none;
-    flex-grow: 1;
-}
-
-.search-container-large .search-input-wrapper {
-    display: flex;
-    align-items: center;
-}
-</style>
-{% endblock %}
 {% endblock %}

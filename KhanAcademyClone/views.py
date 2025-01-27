@@ -42,14 +42,16 @@ def search_courses(request):
     return JsonResponse({'results': results[:5]}, safe=False)
 
 def search_results(request):
-   print("search_results called")
-   query = request.GET.get('q', '')
-   courses = Course.objects.filter(Q(title__icontains=query) | Q(description__icontains=query))
-   units = Unit.objects.filter(title__icontains=query)
-   lessons = Lesson.objects.filter(title__icontains=query)
-   return render(request, 'search_results.html', {
-       'query': query,
-       'courses': courses,
-       'units': units,
-       'lessons': lessons
-   })
+    print("search_results called")
+    query = request.GET.get('q', '')
+    
+    courses = Course.objects.filter(Q(title__icontains=query) | Q(description__icontains=query))
+    units = Unit.objects.filter(title__icontains=query)
+    lessons = Lesson.objects.filter(title__icontains=query)
+    
+    return render(request, 'search_results.html', {
+        'query': query,
+        'courses': courses,
+        'units': units,
+        'lessons': lessons
+    })

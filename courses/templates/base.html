@@ -133,6 +133,9 @@
             font-size: 0.95rem;
         }
 
+        .course-item:hover {
+            background-color: #dae8ea;
+        }
 
         /* Search Container */
         .search-container {
@@ -342,9 +345,9 @@
         <div class="navbar-content">
             <div class="nav-left">
                 <button class="explore-btn">Explore ▾</button>
-                <div class="explore-dropdown">
+                <div class="explore-dropdown">                    
                     <div class="course-grid">
-                        {% for course in courses %}
+                        {% for course in courses_all %}
                             <a href="{% url 'course_detail' course.id %}" class="course-item">
                                 {{ course.title }}
                             </a>
