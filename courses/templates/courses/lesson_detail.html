@@ -1,9 +1,101 @@
-<!-- lesson_detail.html -->
 {% extends "base.html" %}
-
 {% block content %}
-<div class="row">
-    <div class="col-md-3" style="border-right: 1px solid #eee;">
+<style>
+    /* Override bootstrap container */
+.container {
+    max-width: 100% !important;
+    padding: 0 !important;
+    margin: 0 !important;
+}
+
+.lesson-sidebar {
+    width: 340px;
+    height: calc(100vh - 110px);
+    position: fixed;
+    top: 90px;
+    left: 20px;
+    background: white;
+    border-radius: 12px;
+    overflow-y: auto;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.lesson-content {
+    margin-left: 380px;
+    padding: 40px 240px;
+    background-color: white;
+    min-height: calc(100vh - 70px);
+    width: calc(100% - 380px);
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    overflow-x: hidden;
+    background-color: #f8f9fa;
+}
+
+.breadcrumb {
+    padding: 16px 20px;
+    border-bottom: 1px solid #e9ecef;
+}
+
+.breadcrumb-item a {
+    color: #636e72;
+    text-decoration: none;
+    font-size: 14px;
+}
+
+.lesson-list {
+    padding: 0;
+}
+
+.lesson-link {
+    display: block;
+    padding: 16px 20px;
+    color: #2d3436;
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 500;
+    border-left: 4px solid transparent;
+}
+
+.lesson-link:hover {
+    background-color: #f8f9fa;
+}
+
+.lesson-link.active {
+    background-color: #e8f4ff;
+    border-left-color: #0d6efd;
+    color: #0d6efd;
+}
+
+.lesson-content {
+    margin-left: 380px;
+    padding: 40px 240px;
+    background-color: #ffffff;
+    min-height: calc(100vh - 70px);
+    width: calc(100% - 380px);
+}
+
+.lesson-title {
+    font-size: 24px;
+    font-weight: 700;
+    color: #2d3436;
+    margin-bottom: 24px;
+}
+
+.video-container {
+    background: white;
+    border: 1px solid #e9ecef;
+    border-radius: 8px;
+    padding: 20px;
+    margin-top: 24px;
+}
+</style>
+
+<div class="d-flex">
+    <div class="lesson-sidebar">
         <nav aria-label="breadcrumb">
             <ol class="breadcrumb">
                 <li class="breadcrumb-item">
@@ -15,40 +107,42 @@
             </ol>
         </nav>
         
-        <div class="list-group">
+        <div class="lesson-list">
             {% for unit_lesson in lesson.unit.lessons.all %}
-                <a href="{% url 'lesson_detail' lesson.unit.course.id lesson.unit.id unit_lesson.id %}" 
-                   class="list-group-item {% if unit_lesson.id == lesson.id %}active{% endif %}">
-                    {{ unit_lesson.title }}
-                </a>
+            <a href="{% url 'lesson_detail' lesson.unit.course.id lesson.unit.id unit_lesson.id %}"
+               class="lesson-link {% if unit_lesson.id == lesson.id %}active{% endif %}">
+                {{ unit_lesson.title }}
+            </a>
             {% endfor %}
         </div>
     </div>
-   
-   <div class="col-md-9" id="lesson-content">
-       <h1>{{ lesson.title }}</h1>
-       {{ lesson.content|safe }}
-       {% if lesson.video_url %}
-       <div class="mt-4">
-           <iframe width="100%" height="400" src="{{ lesson.video_url }}" frameborder="0" allowfullscreen></iframe>
-       </div>
-       {% endif %}
-   </div>
+
+    <div class="lesson-content">
+        <h1 class="lesson-title">{{ lesson.title }}</h1>
+        <div class="content">
+            {{ lesson.content|safe }}
+        </div>
+        {% if lesson.video_url %}
+        <div class="video-container">
+            <iframe width="100%" height="500" src="{{ lesson.video_url }}" frameborder="0" allowfullscreen></iframe>
+        </div>
+        {% endif %}
+    </div>
 </div>
 
 <script>
 $(document).ready(function() {
-   $('.lesson-link').click(function(e) {
-       e.preventDefault();
-       var courseId = '{{ lesson.course.id }}';
-       var lessonId = $(this).data('lesson-id');
-       
-       $.get(`/courses/${courseId}/lesson/${lessonId}/content/`, function(data) {
-           $('#lesson-content').html(data);
-           $('.lesson-link').removeClass('active').css('background-color', '');
-           $(e.target).addClass('active').css('background-color', '#e9ecef');
-       });
-   });
+    $('.lesson-link').click(function(e) {
+        e.preventDefault();
+        var courseId = '{{ lesson.course.id }}';
+        var lessonId = $(this).data('lesson-id');
+        
+        $.get(`/courses/${courseId}/lesson/${lessonId}/content/`, function(data) {
+            $('#lesson-content').html(data);
+            $('.lesson-link').removeClass('active');
+            $(e.target).addClass('active');
+        });
+    });
 });
 </script>
 {% endblock %}
