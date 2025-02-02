@@ -1,7 +1,9 @@
 from django.contrib.sitemaps import Sitemap
 from django.urls import reverse
+from django.conf import settings
 from .models import Course, Lesson
 
+# For static pages
 class StaticViewSitemap(Sitemap):
     priority = 0.8
     changefreq = "weekly"
@@ -12,30 +14,31 @@ class StaticViewSitemap(Sitemap):
     def location(self, item):
         return reverse(item)
 
+# For courses
 class CourseSitemap(Sitemap):
-    changefreq = "weekly"
     priority = 0.9
+    changefreq = "weekly"
 
     def items(self):
+        # Assuming you have a Course model
         return Course.objects.all()
 
-    def lastmod(self, obj):
-        # Get the last modified lesson within a course
-        last_lesson = Lesson.objects.filter(course=obj).order_by('-order').first()
-        return last_lesson.order if last_lesson else None  # Handle cases where no lessons exist
+    def location(self, obj):
+        # Use reverse() with your URL pattern name
+        return reverse('course_detail', kwargs={'course_id': obj.id})
 
-
+# For lessons
 class LessonSitemap(Sitemap):
-    changefreq = "daily"
     priority = 0.7
+    changefreq = "daily"
 
     def items(self):
+        # Assuming you have a Lesson model
         return Lesson.objects.all()
 
     def location(self, obj):
-        return obj.get_absolute_url()  # This will now use the updated method
-
-    def lastmod(self, obj):
-        return obj.order if obj else None
-
-
+        return reverse('lesson_detail', kwargs={
+            'course_id': obj.course.id,
+            'unit_id': obj.unit.id,
+            'lesson_id': obj.id
+        })

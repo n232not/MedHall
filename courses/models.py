@@ -20,6 +20,7 @@ class Unit(models.Model):
     course = models.ForeignKey(Course, on_delete=models.CASCADE, related_name="units")
     title = models.CharField(max_length=200)
     order = models.PositiveIntegerField(default=0)
+    
     def get_absolute_url(self):
         return f"{settings.SITE_URL}{reverse('unit_detail', kwargs={'course_id': self.course.id, 'unit_id': self.id})}"
 

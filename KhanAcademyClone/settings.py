@@ -34,7 +34,7 @@ SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', 'django-insecure-q9_z8@5air*z)%
 DEBUG = os.environ.get('DJANGO_DEBUG', '') != 'False'
 
 ALLOWED_HOSTS = ['.railway.app', '127.0.0.1', 'checkupbasic.com']
-SITE_URL = f"https://www.{os.getenv('RAILWAY_PUBLIC_DOMAIN', 'localhost:8000')}"# Application definition
+# Application definition
 
 INSTALLED_APPS = [
     'django.contrib.admin',
