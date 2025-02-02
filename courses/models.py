@@ -2,6 +2,7 @@ from django.db import models
 from ckeditor.fields import RichTextField
 from django.contrib.auth.models import User
 from django.urls import reverse
+from django.conf import settings
 from django.utils.text import slugify
 class Course(models.Model):
     title = models.CharField(max_length=200)
@@ -9,7 +10,8 @@ class Course(models.Model):
     teacher = models.ForeignKey(User, on_delete=models.CASCADE, related_name="courses")
 
     def get_absolute_url(self):
-        return reverse('course_detail', kwargs={'course_id': self.id})  # Use 'course_id' instead of 'pk'
+        return f"{settings.SITE_URL}{reverse('course_detail', kwargs={'course_id': self.id})}"
+
 
     def __str__(self):
         return self.title
@@ -18,6 +20,8 @@ class Unit(models.Model):
     course = models.ForeignKey(Course, on_delete=models.CASCADE, related_name="units")
     title = models.CharField(max_length=200)
     order = models.PositiveIntegerField(default=0)
+    def get_absolute_url(self):
+        return f"{settings.SITE_URL}{reverse('unit_detail', kwargs={'course_id': self.course.id, 'unit_id': self.id})}"
 
     class Meta:
         ordering = ['order']
@@ -34,11 +38,8 @@ class Lesson(models.Model):
     unit = models.ForeignKey(Unit, on_delete=models.CASCADE, related_name="lessons")
 
     def get_absolute_url(self):
-        return reverse('lesson_detail', kwargs={
-            'course_id': self.course.id,
-            'unit_id': self.unit.id,
-            'lesson_id': self.id,
-        })
+        return f"{settings.SITE_URL}{reverse('lesson_detail', kwargs={'course_id': self.course.id, 'unit_id': self.unit.id, 'lesson_id': self.id})}"
+
     class Meta:
         ordering = ['order']
 
