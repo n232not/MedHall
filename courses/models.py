@@ -3,14 +3,13 @@ from ckeditor.fields import RichTextField
 from django.contrib.auth.models import User
 from django.urls import reverse
 from django.utils.text import slugify
-
 class Course(models.Model):
     title = models.CharField(max_length=200)
     description = models.TextField()
     teacher = models.ForeignKey(User, on_delete=models.CASCADE, related_name="courses")
 
     def get_absolute_url(self):
-        return reverse('course_detail', kwargs={'pk': self.pk})
+        return reverse('course_detail', kwargs={'course_id': self.id})  # Use 'course_id' instead of 'pk'
 
     def __str__(self):
         return self.title
@@ -34,11 +33,14 @@ class Lesson(models.Model):
     order = models.PositiveIntegerField(default=0)  # To order lessons within a course
     unit = models.ForeignKey(Unit, on_delete=models.CASCADE, related_name="lessons")
 
+    def get_absolute_url(self):
+        return reverse('lesson_detail', kwargs={
+            'course_id': self.course.id,
+            'unit_id': self.unit.id,
+            'lesson_id': self.id,
+        })
     class Meta:
         ordering = ['order']
-
-    def get_absolute_url(self):
-        return reverse('lesson_detail', kwargs={'pk': self.pk})
 
     def __str__(self):
         return f"{self.course.title} - {self.title}"
