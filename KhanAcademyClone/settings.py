@@ -33,7 +33,7 @@ SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', 'django-insecure-q9_z8@5air*z)%
 #DEBUG = False
 DEBUG = os.environ.get('DJANGO_DEBUG', '') != 'False'
 
-ALLOWED_HOSTS = ['.railway.app', '127.0.0.1', 'checkupbasic.com']
+ALLOWED_HOSTS = ['.railway.app', '127.0.0.1', 'checkupbasic.com', 'medhall.org']
 # Application definition
 
 INSTALLED_APPS = [
