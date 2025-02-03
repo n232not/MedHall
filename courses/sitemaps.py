@@ -1,10 +1,18 @@
+# courses/sitemaps.py
+
 from django.contrib.sitemaps import Sitemap
 from django.urls import reverse
-from django.conf import settings
-from .models import Course, Lesson
+from .models import Course, Lesson, Unit
 
-# For static pages
-class StaticViewSitemap(Sitemap):
+class BaseSitemap(Sitemap):
+    protocol = 'https'  # Force HTTPS
+
+    def get_domain(self, site=None):
+        # The site parameter is passed by Django's sitemap framework
+        # We override it to return our custom domain
+        return 'checkupbasic.com'  # or use environment variable to be more flexible
+
+class StaticViewSitemap(BaseSitemap):
     priority = 0.8
     changefreq = "weekly"
 
@@ -14,31 +22,22 @@ class StaticViewSitemap(Sitemap):
     def location(self, item):
         return reverse(item)
 
-# For courses
-class CourseSitemap(Sitemap):
-    priority = 0.9
+class CourseSitemap(BaseSitemap):
     changefreq = "weekly"
+    priority = 0.9
 
     def items(self):
-        # Assuming you have a Course model
         return Course.objects.all()
 
     def location(self, obj):
-        # Use reverse() with your URL pattern name
-        return reverse('course_detail', kwargs={'course_id': obj.id})
+        return obj.get_absolute_url()
 
-# For lessons
-class LessonSitemap(Sitemap):
+class LessonSitemap(BaseSitemap):
     priority = 0.7
     changefreq = "daily"
 
     def items(self):
-        # Assuming you have a Lesson model
         return Lesson.objects.all()
 
     def location(self, obj):
-        return reverse('lesson_detail', kwargs={
-            'course_id': obj.course.id,
-            'unit_id': obj.unit.id,
-            'lesson_id': obj.id
-        })
+        return obj.get_absolute_url()

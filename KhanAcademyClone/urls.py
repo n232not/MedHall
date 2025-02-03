@@ -34,7 +34,6 @@ urlpatterns = [
     path('search/', views.search_courses, name='search_courses'),
     path('search/results/', views.search_results, name='search_results'),
     path('sitemap.xml', sitemap, 
-         {'sitemaps': sitemaps,
-          'template_name': 'custom_sitemap.xml'},
+         {'sitemaps': sitemaps, 'template_name': 'custom_sitemap.xml'},
          name='django.contrib.sitemaps.views.sitemap'),
 ]
