@@ -29,6 +29,20 @@
     width: calc(100% - 380px);
 }
 
+.lesson-content .content img {
+    max-width: 100% !important;
+    height: auto !important;
+    display: block;
+    margin: 0 auto;
+    object-fit: contain;
+}
+
+/* Ensure images don't overflow their container */
+.lesson-content .content {
+    max-width: 100%;
+    overflow-x: auto;
+}
+
 body {
     margin: 0;
     padding: 0;
