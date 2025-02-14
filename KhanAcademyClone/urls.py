@@ -19,6 +19,8 @@ from django.urls import path, include
 from . import views
 from django.contrib.sitemaps.views import sitemap
 from courses.sitemaps import StaticViewSitemap, CourseSitemap, LessonSitemap  # Import sitemaps
+from django.conf import settings
+from django.conf.urls.static import static
 
 sitemaps = {
     'static': StaticViewSitemap(),
@@ -36,4 +38,5 @@ urlpatterns = [
     path('sitemap.xml', sitemap, 
          {'sitemaps': sitemaps, 'template_name': 'custom_sitemap.xml'},
          name='django.contrib.sitemaps.views.sitemap'),
-]
+    path("ckeditor5/", include('django_ckeditor_5.urls')),
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

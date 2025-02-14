@@ -31,6 +31,26 @@
     font-size: 13px;
     line-height: 1.4;
 }
+
+/* Add these styles to handle rich text content better */
+.course-description p {
+    margin-bottom: 0.5em;
+}
+
+.course-description ul, 
+.course-description ol {
+    margin-left: 1.5em;
+    margin-bottom: 0.5em;
+}
+
+.course-description a {
+    color: #0d6efd;
+    text-decoration: none;
+}
+
+.course-description a:hover {
+    text-decoration: underline;
+}
 .unit-link {
     display: block;
     padding: 20px 30px;
@@ -92,7 +112,7 @@
         <div class="course-header">
             <div class="course-title">{{ course.title }}</div>
             <div class="course-meta">{{ course.units.count }} UNITS</div>
-            <div class="course-description">{{ course.description }}</div>
+            <div class="course-description">{{ course.description|safe }}</div>
         </div>
         {% for unit in course.units.all %}
         <a href="#unit{{ unit.id }}" class="unit-link text-decoration-none text-dark" data-unit-id="unit{{ unit.id }}">

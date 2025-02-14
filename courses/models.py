@@ -1,12 +1,12 @@
 from django.db import models
-from ckeditor.fields import RichTextField
+from django_ckeditor_5.fields import CKEditor5Field
 from django.contrib.auth.models import User
 from django.urls import reverse
 from django.contrib.sites.models import Site
 
 class Course(models.Model):
     title = models.CharField(max_length=200)
-    description = models.TextField()
+    description = CKEditor5Field('Description', config_name='default')
     teacher = models.ForeignKey(User, on_delete=models.CASCADE, related_name="courses")
 
     def get_absolute_url(self):
@@ -36,7 +36,7 @@ class Unit(models.Model):
 class Lesson(models.Model):
     course = models.ForeignKey(Course, on_delete=models.CASCADE, related_name="lessons")
     title = models.CharField(max_length=200)
-    content = RichTextField()
+    content = CKEditor5Field('Content', config_name='default')
     video_url = models.URLField(blank=True, null=True)
     order = models.PositiveIntegerField(default=0)
     unit = models.ForeignKey(Unit, on_delete=models.CASCADE, related_name="lessons")
