@@ -14,11 +14,9 @@ def search_courses(request):
     print(f"Search query received: {query}")
     if len(query) < 2:
         return JsonResponse({'results': []})
-
     courses = Course.objects.filter(Q(title__icontains=query) | Q(description__icontains=query))[:2]
     units = Unit.objects.filter(title__icontains=query)[:2]
     lessons = Lesson.objects.filter(title__icontains=query)[:1]
-
     results = []
     for course in courses:
         results.append({
@@ -38,17 +36,16 @@ def search_courses(request):
             'title': lesson.title,
             'url': f'/courses/{lesson.unit.course.id}/unit/{lesson.unit.id}/lesson/{lesson.id}/'
         })
-
     return JsonResponse({'results': results[:5]}, safe=False)
 
 def search_results(request):
     print("search_results called")
     query = request.GET.get('q', '')
-    
+   
     courses = Course.objects.filter(Q(title__icontains=query) | Q(description__icontains=query))
     units = Unit.objects.filter(title__icontains=query)
     lessons = Lesson.objects.filter(title__icontains=query)
-    
+   
     return render(request, 'search_results.html', {
         'query': query,
         'courses': courses,

@@ -13,29 +13,30 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 from pathlib import Path
 import os
 from dotenv import load_dotenv
+from supabase import create_client
+from django.core.files.storage import Storage
+from django.conf import settings
+import requests
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 SITE_URL = f"https://www.{os.getenv('RAILWAY_PUBLIC_DOMAIN', 'checkupbasic.com')}"
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
-# Support env variables from .env file if defined
 
+# Support env variables from .env file if defined
 env_path = load_dotenv(os.path.join(BASE_DIR, '.env'))
 load_dotenv(env_path)
 
 # SECURITY WARNING: keep the secret key used in production secret!
-#SECRET_KEY = 'django-insecure-q9_z8@5air*z)%wcw#%&a4sp=sowztm9%(wrn8k2yct_do952+'
 import os
 SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', 'django-insecure-q9_z8@5air*z)%wcw#%&a4sp=sowztm9%(wrn8k2yct_do952+')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-#DEBUG = False
 DEBUG = os.environ.get('DJANGO_DEBUG', '') != 'False'
 
 ALLOWED_HOSTS = ['.railway.app', '127.0.0.1', 'checkupbasic.com', 'medhall.org']
-# Application definition
 
+# Application definition
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -47,11 +48,13 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'courses',
     'django_ckeditor_5',
+    'corsheaders',
 ]
 
 SITE_ID = 1
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -69,18 +72,71 @@ CKEDITOR_5_CONFIGS = {
                    'bulletedList', 'numberedList', 'blockQuote', 'imageUpload', ],
         'height': '300px',
         'width': '100%',
+        "image": {
+            "toolbar": [
+                "imageTextAlternative",
+                "imageStyle:full",
+                "imageStyle:side",
+            ],
+            "upload": {
+                "types": ["jpeg", "png", "gif", "jpg"],
+                "url": "/courses/ckeditor5/upload/"  # Match the URL pattern we added
+            }
+        },
+        "extraPlugins": ["ImageUpload"],
     },
 }
 
-# For image uploads
-CKEDITOR_5_FILE_STORAGE = "django.core.files.storage.FileSystemStorage"
+# Replace these lines in your settings.py:
+
+# Supabase Configuration
+SUPABASE_URL = os.environ.get('SUPABASE_URL')
+SUPABASE_ANON_KEY = os.environ.get('SUPABASE_ANON_KEY')
+SUPABASE_SERVICE_KEY = os.environ.get('SUPABASE_SERVICE_KEY')
+
+# Use service role key for admin operations
+
+# Custom Storage for Supabase
+class SupabaseStorage(Storage):
+    def __init__(self):
+        self.bucket_name = 'ckeditor-images'
+
+    def _save(self, name, content):
+        file_data = content.read()
+        response = requests.post(
+            f"{settings.SUPABASE_URL}/storage/v1/object/{self.bucket_name}/{name}",
+            headers={
+                "apikey": settings.SUPABASE_SERVICE_KEY,
+                "Authorization": f"Bearer {settings.SUPABASE_SERVICE_KEY}"
+            },
+            data=file_data
+        )
+        if response.status_code == 200:
+            return name
+        return None
+
+    def url(self, name):
+        return f"{settings.SUPABASE_URL}/storage/v1/object/public/{self.bucket_name}/{name}"
+
+    def exists(self, name):
+        return False  # Always create a new file
+
+# CKEditor Storage Configuration
+CKEDITOR_5_FILE_STORAGE = "KhanAcademyClone.settings.SupabaseStorage"
 CKEDITOR_5_UPLOAD_PATH = "uploads/"
 MEDIA_URL = "/media/"
 MEDIA_ROOT = BASE_DIR / "media"
 
+# CORS Settings
+CORS_ALLOWED_ORIGINS = [
+    "https://npogpxjmyekdumizlnms.supabase.co",
+]
+CORS_ALLOW_CREDENTIALS = True
+
 CSRF_TRUSTED_ORIGINS = ['https://*.railway.app','https://checkupbasic.com','https://medhall.org']
 ROOT_URLCONF = 'KhanAcademyClone.urls'
 STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.ManifestStaticFilesStorage'
+
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
@@ -100,12 +156,8 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'KhanAcademyClone.wsgi.application'
 
-
 # Database
-# https://docs.djangoproject.com/en/5.1/ref/settings/#databases
-# Update database configuration from $DATABASE_URL environment variable (if defined)
 import dj_database_url
-
 
 DATABASES = {
     'default': {
@@ -120,10 +172,7 @@ if 'DATABASE_URL' in os.environ:
         conn_health_checks=True,
     )
 
-
 # Password validation
-# https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
-
 AUTH_PASSWORD_VALIDATORS = [
     {
         'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
@@ -139,37 +188,22 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
 # Internationalization
-# https://docs.djangoproject.com/en/5.1/topics/i18n/
-
 LANGUAGE_CODE = 'en-us'
-
 TIME_ZONE = 'UTC'
-
 USE_I18N = True
-
 USE_TZ = True
 
-
 # Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/5.1/howto/static-files/
-
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 STATIC_URL = 'static/'
-STATICFILES_DIRS = [BASE_DIR / "static"]  
+STATICFILES_DIRS = [BASE_DIR / "static"]
 
 # Default primary key field type
-# https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
-
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-
-
-# Static file serving.
-# https://whitenoise.readthedocs.io/en/stable/django.html#add-compression-and-caching-support
+# Static file serving with whitenoise
 STORAGES = {
-    # ...
     "staticfiles": {
         "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
     },

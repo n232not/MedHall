@@ -1,5 +1,8 @@
 {% extends "base.html" %}
+{% load static %}
 {% block content %}
+<script src="https://cdn.ckeditor.com/ckeditor5/38.1.1/classic/ckeditor.js"></script>
+<script src="{% static 'js/ckeditor_upload_adapter.js' %}"></script>
 <style>
 .navbar {
     margin-bottom: 0 !important;
