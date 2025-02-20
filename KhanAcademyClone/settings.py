@@ -83,7 +83,7 @@ CKEDITOR_5_CONFIGS = {
                 "url": "/courses/ckeditor5/upload/"  # Match the URL pattern we added
             }
         },
-        "extraPlugins": ["ImageUpload"],
+        "extraPlugins": ["ImageUpload"]
     },
 }
 
