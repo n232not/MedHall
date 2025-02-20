@@ -47,6 +47,8 @@ class Lesson(models.Model):
             'unit_id': self.unit.id,
             'lesson_id': self.id
         })
+    def get_index(self):
+        return list(self.unit.lessons.all()).index(self)
 
     class Meta:
         ordering = ['order']

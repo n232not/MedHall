@@ -1,169 +1,509 @@
 {% extends "base.html" %}
 {% load static %}
+
 {% block content %}
 <style>
-    /* Override bootstrap container */
-.container {
-    max-width: 100% !important;
-    padding: 0 !important;
-    margin: 0 !important;
-}
+    /* Reset and base styles */
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
 
-.lesson-sidebar {
-    width: 340px;
-    height: calc(100vh - 110px);
-    position: fixed;
-    top: 90px;
-    left: 20px;
-    background: white;
-    border-radius: 12px;
-    overflow-y: auto;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-}
+    body {
+        background-color: white;
+        font-family: "SF Pro Display", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+        color: #1a1a1a;
+        line-height: 1.6;
+        -webkit-font-smoothing: antialiased;
+        text-rendering: optimizeLegibility;
+    }
 
-.lesson-content {
-    margin-left: 380px;
-    padding: 40px 240px;
-    background-color: white;
-    min-height: calc(100vh - 70px);
-    width: calc(100% - 380px);
-}
+    .container {
+        max-width: 1240px;
+        margin: 0 auto;
+        padding: 32px;
+    }
 
-.lesson-content .content img {
-    max-width: 100% !important;
-    height: auto !important;
-    display: block;
-    margin: 0 auto;
-    object-fit: contain;
-}
+    /* Main grid layout */
+    .main-container {
+        display: grid;
+        grid-template-columns: 300px minmax(0, 1fr);
+        gap: 80px;
+    }
 
-/* Ensure images don't overflow their container */
-.lesson-content .content {
-    max-width: 100%;
-    overflow-x: auto;
-}
+    /* Sidebar styles */
+    .toc-sidebar {
+        padding-top: 8px;
+    }
 
-body {
-    margin: 0;
-    padding: 0;
-    overflow-x: hidden;
-    background-color: #f8f9fa;
-}
+    .toc-list {
+        position: sticky;
+        top: 32px;
+        max-height: calc(100vh - 64px);
+        overflow-y: auto;
+        padding-right: 24px;
+    }
 
-.breadcrumb {
-    padding: 16px 20px;
-    border-bottom: 1px solid #e9ecef;
-}
+    /* Breadcrumb styles */
+    .breadcrumb {
+        font-size: 14px;
+        font-weight: 500;
+        color: #000000;
+        margin-bottom: 32px;
+        display: flex;
+        align-items: center;
+    }
 
-.breadcrumb-item a {
-    color: #313131;
-    text-decoration: none;
-    font-size: 15px;
-    font-weight: 500;
-}
+    .breadcrumb a {
+        color: #000000;
+        text-decoration: none;
+        transition: color 0.15s ease;
+    }
 
-.breadcrumb-item:hover {
-    text-decoration: underline;
-    text-underline-offset: 3px;
-}
+    .breadcrumb a:hover {
+        color: #006AFF;
+    }
 
-.lesson-list {
-    padding: 0;
-}
+    .breadcrumb-separator {
+        margin: 0 8px;
+        color: #757575;
+    }
 
-.lesson-link {
-    display: block;
-    padding: 20px 20px;
-    color: #2d3436;
-    text-decoration: none;
-    font-size: 16px;
-    font-weight: 600;
-    border-left: 4px solid transparent;
-}
+    .toc-title {
+        font-size: 20px;
+        font-weight: 600;
+        color: #1a1a1a;
+        margin-bottom: 40px;
+        letter-spacing: -0.02em;
+    }
 
-.lesson-link:hover {
-    background-color: #f8f9fa;
-}
+    .toc-section {
+        margin-bottom: 48px;
+    }
 
-.lesson-link.active {
-    background-color: #e8f4ff;
-    border-left-color: #0d6efd;
-    color: #0d6efd;
-}
+    .toc-section.in-lesson .toc-section-title {
+        font-size: 11px;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        color: #757575;
+        margin-bottom: 16px;
+        font-weight: 600;
+    }
 
-.lesson-content {
-    margin-left: 380px;
-    padding: 40px 240px;
-    background-color: #ffffff;
-    min-height: calc(100vh - 70px);
-    width: calc(100% - 380px);
-}
+    .toc-section.in-lesson .toc-nav {
+        margin-left: -16px;
+    }
 
-.lesson-title {
-    font-size: 48px;
-    font-weight: 700;
-    color: #2d3436;
-    margin-bottom: 24px;
-}
+    .toc-section.in-lesson .toc-link {
+        font-size: 14px;
+        line-height: 1.5;
+        padding: 8px 16px;
+        color: #404040;
+        font-weight: 400;
+    }
 
-.video-container {
-    background: white;
-    border: 1px solid #e9ecef;
-    border-radius: 8px;
-    padding: 20px;
-    margin-top: 24px;
-}
+    .toc-section.related {
+        margin-top: 48px;
+    }
+
+    .toc-section-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+        padding-bottom: 12px;
+        border-bottom: 1px solid #E5E5E5;
+    }
+
+    .toc-section.related .toc-section-title {
+        font-size: 12px;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        color: #1a1a1a;
+        font-weight: 700;
+        margin: 0;
+    }
+
+    .see-all-link {
+        font-size: 11px;
+        color: #006AFF;
+        text-decoration: none;
+        transition: color 0.15s ease;
+    }
+
+    .see-all-link:hover {
+        text-decoration: underline;
+    }
+
+    .toc-section.related .toc-nav {
+        margin-left: -16px;
+    }
+
+    .toc-section.related .toc-link {
+        font-size: 15px;
+        line-height: 1.4;
+        padding: 12px 16px;
+        color: #1a1a1a;
+        font-weight: 500;
+    }
+
+    .toc-nav {
+        list-style: none;
+    }
+
+    .toc-link {
+        display: block;
+        text-decoration: none;
+        border-left: 2px solid transparent;
+        transition: all 0.2s ease;
+    }
+
+    .toc-link:hover {
+        color: #006AFF;
+        background: rgba(0, 106, 255, 0.04);
+    }
+
+    .toc-link.active {
+        color: #006AFF;
+        border-left-color: #006AFF;
+        background: rgba(0, 106, 255, 0.04);
+    }
+
+    /* Main content */
+    .content-area {
+        max-width: 720px;
+    }
+
+    .category-label {
+        font-size: 13px;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        margin-bottom: 24px;
+        color: #006AFF;
+    }
+
+    .lesson-title {
+        font-size: 46px;
+        line-height: 1.1;
+        font-weight: 700;
+        color: #1a1a1a;
+        margin-bottom: 32px;
+        letter-spacing: -0.03em;
+    }
+
+    .meta-info {
+        display: flex;
+        gap: 32px;
+        margin-bottom: 48px;
+        font-size: 14px;
+        color: #757575;
+        font-weight: 500;
+        align-items: center;
+    }
+
+    .meta-item {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .author-name {
+        color: #1a1a1a;
+        font-weight: 600;
+        text-decoration: none;
+        transition: color 0.15s ease;
+    }
+
+    .author-name:hover {
+        color: #006AFF;
+    }
+
+    .lesson-content {
+        font-size: 18px;
+        line-height: 1.8;
+        color: #333;
+    }
+
+    .lesson-content p {
+        margin-bottom: 32px;
+    }
+
+    .lesson-content h2 {
+        font-size: 32px;
+        font-weight: 700;
+        margin: 56px 0 24px;
+        color: #1a1a1a;
+        letter-spacing: -0.02em;
+        line-height: 1.2;
+    }
+
+    .lesson-content h3 {
+        font-size: 24px;
+        font-weight: 600;
+        margin: 48px 0 20px;
+        color: #1a1a1a;
+        letter-spacing: -0.01em;
+        line-height: 1.3;
+    }
+
+    .lesson-content img {
+        width: 100%;
+        height: auto;
+        margin: 40px 0;
+        border-radius: 4px;
+    }
+
+    .lesson-content ul, 
+    .lesson-content ol {
+        margin: 24px 0 32px;
+        padding-left: 24px;
+    }
+
+    .lesson-content li {
+        margin-bottom: 16px;
+    }
+
+    .lesson-content blockquote {
+        margin: 40px 0;
+        padding-left: 24px;
+        border-left: 4px solid #E5E5E5;
+        font-style: italic;
+        color: #555;
+    }
+
+    /* Video section */
+    .video-container {
+        margin: 48px 0;
+        background: #F8F9FA;
+        border-radius: 4px;
+        overflow: hidden;
+    }
+
+    .video-container iframe {
+        width: 100%;
+        aspect-ratio: 16 / 9;
+        display: block;
+    }
+
+    /* Bottom navigation */
+    .bottom-nav {
+        margin-top: 80px;
+        padding-top: 32px;
+        border-top: 1px solid #E5E5E5;
+    }
+
+    .bottom-nav-container {
+        display: flex;
+        justify-content: space-between;
+    }
+
+    .nav-button {
+        max-width: 280px;
+    }
+
+    .nav-button-label {
+        font-size: 13px;
+        color: #757575;
+        font-weight: 500;
+        display: block;
+        margin-bottom: 8px;
+    }
+
+    .nav-button-title {
+        color: #1a1a1a;
+        text-decoration: none;
+        font-size: 15px;
+        font-weight: 500;
+        line-height: 1.4;
+        transition: color 0.15s ease;
+    }
+
+    .nav-button:hover .nav-button-title {
+        color: #006AFF;
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 1024px) {
+        .main-container {
+            grid-template-columns: 1fr;
+            gap: 40px;
+        }
+
+        .toc-sidebar {
+            display: none;
+        }
+
+        .content-area {
+            max-width: 720px;
+            margin: 0 auto;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .container {
+            padding: 24px;
+        }
+
+        .lesson-title {
+            font-size: 36px;
+        }
+
+        .meta-info {
+            flex-direction: column;
+            gap: 16px;
+            align-items: flex-start;
+        }
+    }
 </style>
 
-<div class="d-flex">
-    <div class="lesson-sidebar">
-        <nav aria-label="breadcrumb">
-            <ol class="breadcrumb">
-                <li class="breadcrumb-item">
+<div class="container">
+    <div class="main-container">
+        <!-- Sidebar -->
+        <aside class="toc-sidebar">
+            <div class="toc-list">
+                <!-- Breadcrumb in sidebar -->
+                <nav class="breadcrumb">
                     <a href="{% url 'course_detail' lesson.unit.course.id %}">{{ lesson.unit.course.title }}</a>
-                </li>
-                <li class="breadcrumb-item">
+                    <span class="breadcrumb-separator">/</span>
                     <a href="{% url 'course_detail' lesson.unit.course.id %}#unit{{ lesson.unit.id }}">{{ lesson.unit.title }}</a>
-                </li>
-            </ol>
-        </nav>
-        
-        <div class="lesson-list">
-            {% for unit_lesson in lesson.unit.lessons.all %}
-            <a href="{% url 'lesson_detail' lesson.unit.course.id lesson.unit.id unit_lesson.id %}"
-               class="lesson-link {% if unit_lesson.id == lesson.id %}active{% endif %}">
-                {{ unit_lesson.title }}
-            </a>
-            {% endfor %}
-        </div>
-    </div>
+                </nav>
 
-    <div class="lesson-content">
-        <h1 class="lesson-title">{{ lesson.title }}</h1>
-        <div class="content">
-            {{ lesson.content|safe }}
-        </div>
-        {% if lesson.video_url %}
-        <div class="video-container">
-            <iframe width="100%" height="500" src="{{ lesson.video_url }}" frameborder="0" allowfullscreen></iframe>
-        </div>
-        {% endif %}
+                <h2 class="toc-title">Contents</h2>
+                <div class="toc-section in-lesson">
+                    <h3 class="toc-section-title">In This Lesson</h3>
+                    <ul class="toc-nav" id="lesson-toc"></ul>
+                </div>
+                <div class="toc-section related">
+                    <div class="toc-section-header">
+                        <h3 class="toc-section-title">Related Articles</h3>
+                        <a href="{% url 'course_detail' lesson.unit.course.id %}" class="see-all-link">See all</a>
+                    </div>
+                    <ul class="toc-nav">
+                        {% with lessons=lesson.unit.lessons.all %}
+                            {% for unit_lesson in lessons %}
+                                {% with lesson_index=forloop.counter0 %}
+                                    {% with current_index=lesson.get_index %}
+                                        {% if lesson_index >= current_index|add:"-2" and lesson_index <= current_index|add:"2" %}
+                                            <li>
+                                                <a href="{% url 'lesson_detail' lesson.unit.course.id lesson.unit.id unit_lesson.id %}"
+                                                   class="toc-link {% if unit_lesson.id == lesson.id %}active{% endif %}">
+                                                    {{ unit_lesson.title }}
+                                                </a>
+                                            </li>
+                                        {% endif %}
+                                    {% endwith %}
+                                {% endwith %}
+                            {% endfor %}
+                        {% endwith %}
+                    </ul>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="content-area">
+            <div class="category-label">{{ lesson.unit.course.title }}</div>
+            <h1 class="lesson-title">{{ lesson.title }}</h1>
+            
+            <div class="meta-info">
+                <div class="meta-item">
+                    <span>By</span>
+                    <a href="#" class="author-name">{{ lesson.author.name }}</a>
+                </div>
+                <div class="meta-item">
+                    Updated {{ lesson.updated_at|date:"F d, Y" }}
+                </div>
+            </div>
+
+            <div class="lesson-content">
+                {{ lesson.content|safe }}
+            </div>
+
+            {% if lesson.video_url %}
+            <div class="video-container">
+                <iframe src="{{ lesson.video_url }}" frameborder="0" allowfullscreen></iframe>
+            </div>
+            {% endif %}
+
+            <!-- Bottom Navigation -->
+            <nav class="bottom-nav">
+                <div class="bottom-nav-container">
+                    {% if prev_lesson %}
+                    <div class="nav-button">
+                        <span class="nav-button-label">← Previous</span>
+                        <a href="{% url 'lesson_detail' lesson.unit.course.id lesson.unit.id prev_lesson.id %}" 
+                           class="nav-button-title">{{ prev_lesson.title }}</a>
+                    </div>
+                    {% else %}
+                    <div></div>
+                    {% endif %}
+
+                    {% if next_lesson %}
+                    <div class="nav-button" style="text-align: right;">
+                        <span class="nav-button-label">Next →</span>
+                        <a href="{% url 'lesson_detail' lesson.unit.course.id lesson.unit.id next_lesson.id %}" 
+                           class="nav-button-title">{{ next_lesson.title }}</a>
+                    </div>
+                    {% else %}
+                    <div></div>
+                    {% endif %}
+                </div>
+            </nav>
+        </main>
     </div>
 </div>
 
 <script>
-$(document).ready(function() {
-    $('.lesson-link').click(function(e) {
-        e.preventDefault();
-        var courseId = '{{ lesson.course.id }}';
-        var lessonId = $(this).data('lesson-id');
+document.addEventListener('DOMContentLoaded', function() {
+    const content = document.querySelector('.lesson-content');
+    const tocList = document.getElementById('lesson-toc');
+    
+    if (content && tocList) {
+        const headers = content.querySelectorAll('h2, h3, h4');
         
-        $.get(`/courses/${courseId}/lesson/${lessonId}/content/`, function(data) {
-            $('#lesson-content').html(data);
-            $('.lesson-link').removeClass('active');
-            $(e.target).addClass('active');
+        headers.forEach((header, index) => {
+            const id = `section-${index}`;
+            header.id = id;
+            
+            const li = document.createElement('li');
+            const link = document.createElement('a');
+            
+            link.href = `#${id}`;
+            link.textContent = header.textContent;
+            link.className = 'toc-link';
+            
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                const yOffset = -32;
+                const element = document.getElementById(id);
+                const y = element.getBoundingClientRect().top + window.pageYOffset + yOffset;
+                window.scrollTo({top: y, behavior: 'smooth'});
+            });
+            
+            li.appendChild(link);
+            tocList.appendChild(li);
         });
-    });
+
+        // Highlight active section while scrolling
+        const observerCallback = (entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const id = entry.target.id;
+                    document.querySelectorAll('.toc-link').forEach(link => {
+                        link.classList.toggle('active', link.getAttribute('href') === `#${id}`);
+                    });
+                }
+            });
+        };
+
+        const observer = new IntersectionObserver(observerCallback, {
+            rootMargin: '-100px 0px -66%'
+        });
+
+        headers.forEach(header => observer.observe(header));
+    }
 });
 </script>
 {% endblock %}
